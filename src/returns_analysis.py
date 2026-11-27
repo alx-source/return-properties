@@ -81,3 +81,19 @@ def compute_log_returns(prices):
     log_returns = np.log(prices / previous_prices)
     log_returns = log_returns.iloc[1:]
     return log_returns
+
+
+def sample_skewness(x):
+    """Compute sample skewness from an array or Series of returns."""
+    deviations = x - np.mean(x)
+    m2 = np.mean(deviations ** 2)
+    m3 = np.mean(deviations ** 3)
+    return float(m3 / (m2 ** 1.5))
+
+
+def sample_excess_kurtosis(x):
+    """Compute sample excess kurtosis from an array or Series of returns."""
+    deviations = x - np.mean(x)
+    m2 = np.mean(deviations ** 2)
+    m4 = np.mean(deviations ** 4)
+    return float(m4 / m2 ** 2 - 3)
