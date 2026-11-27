@@ -3,6 +3,7 @@
 import os
 import time
 
+import numpy as np
 import pandas as pd
 import yfinance as yf
 
@@ -72,3 +73,11 @@ def download_prices(tickers, start, end, path):
 def load_prices(path):
     prices = pd.read_csv(path, index_col="Date", parse_dates=True)
     return prices
+
+
+def compute_log_returns(prices):
+    """Compute daily log returns from a DataFrame or Series of prices."""
+    previous_prices = prices.shift(1)
+    log_returns = np.log(prices / previous_prices)
+    log_returns = log_returns.iloc[1:]
+    return log_returns
