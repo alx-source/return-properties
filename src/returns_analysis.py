@@ -5,6 +5,7 @@ import time
 
 import numpy as np
 import pandas as pd
+import scipy.stats
 import yfinance as yf
 
 TICKERS = [
@@ -97,3 +98,34 @@ def sample_excess_kurtosis(x):
     m2 = np.mean(deviations ** 2)
     m4 = np.mean(deviations ** 4)
     return float(m4 / m2 ** 2 - 3)
+
+
+def summary_table(returns):
+    """Build a summary statistics table of daily returns across all tickers."""
+    rows = []
+    for ticker in returns.columns:
+        x = returns[ticker].to_numpy()
+        row = {
+            "mean": float(np.mean(x)),
+            "std": float(np.std(x, ddof=1)),
+            "skewness": sample_skewness(x),
+            "excess_kurtosis": sample_excess_kurtosis(x),
+            "min": float(np.min(x)),
+            "max": float(np.max(x)),
+        }
+        rows.append(row)
+    return pd.DataFrame(rows, index=returns.columns)
+
+
+def jarque_bera_table(returns):
+    """Run the Jarque-Bera normality test for each ticker and return a results table."""
+    rows = []
+    for ticker in returns.columns:
+        x = returns[ticker].to_numpy()
+        result = scipy.stats.jarque_bera(x)
+        row = {
+            "jb_statistic": float(result.statistic),
+            "p_value": float(result.pvalue),
+        }
+        rows.append(row)
+    return pd.DataFrame(rows, index=returns.columns)
